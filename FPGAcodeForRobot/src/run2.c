@@ -10,7 +10,7 @@
  *                 FPGA waits for the ping from Robot
  *                 Once a ping is received
  *                 It enters in a loop
- *                 Where it sends control inputs to periodically to ROBOT
+ *                 Where it sends control inputs to ROBOT periodically
  *                 =================================================================
  *                 1) Turn on the Broadcaster ; 2) Then run the FPGA ; 3) Run the code on Robot
  */
