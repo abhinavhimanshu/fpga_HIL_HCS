@@ -138,9 +138,9 @@ int main(){
 /**********************************************************************************************************************/
 	   /* |Real State| -> |Index| -> [ CONTROLLER ON FPGA] -> |Index| -> |Real Control Input| */
 	                    index=statetoindexS(buffer1);    //Get index of current state space
-                        writeme(w,index); 				 //Write index on Controller IP CORE input
-                        usleep(1);                       //Read At
-			            indextostateC(readme(r),buffer2);//Read At Controller IP CORE output
+                            writeme(w,index); 		     //Write index on Controller IP CORE input
+                            usleep(1);                       //Read At
+			    indextostateC(readme(r),buffer2);//Read At Controller IP CORE output
 
 
 /**********************************************************************************************************************/
@@ -153,10 +153,10 @@ int main(){
 			}
 		    printf(" Input for the state is %f   |    %f \n",buffer2[0],buffer2[1]);
          //send control inputs corresponding to latest X Y and theta
-            sendto(udpSocket2,buffer2,sizeof(buffer2),0,(struct sockaddr *)&serverStorage2,addr_size2);//Send control inputs to Robot
-            stop = clock();
+                sendto(udpSocket2,buffer2,sizeof(buffer2),0,(struct sockaddr *)&serverStorage2,addr_size2);//Send control inputs to Robot
+                 stop = clock();
          //wait untill tau seconds | Take time less than tau to be safe
-			while ( ( ((float)( stop - start)*100000)/ CLOCKS_PER_SEC) < tau*100000) {
+		while ( ( ((float)( stop - start)*100000)/ CLOCKS_PER_SEC) < tau*100000) {
 			           		stop = clock();
             }
 
@@ -179,9 +179,9 @@ int main(){
 void initMask(){
 				for(int i=0;i<sdim-1;i++){
 					     valuesmask[i]=pow(2,smask[i])-1;
- 			    }
+ 			             }
 				for(int i=0;i<udim-1;i++){
-									     valueinmask[i]=pow(2,umask[i])-1;
+					     valueinmask[i]=pow(2,umask[i])-1;
 				}
 }
 
