@@ -1,5 +1,5 @@
 # fpga_HIL_HCS
-FPGAcodeForRobot - This folder contains code for FPGA in form of petalinux appliacaiton. Which acts as a controller and runs the robot.
+FPGAcodeForRobot - This folder contains code for FPGA in form of petalinux applicaiton. Which acts as a controller and runs the robot.
 HIL_uartest      - This folder contains code for FPGA in form of petalinux application, which is used to do Hardware in loop Matlab simulation.
 Robot_controller_IP- This folder contains the custom vivado IP for the arena.
 Robot_ex_for_Scots - This folder contains the Scots example for the Robot and example for bdd to HDL implementation tool.
