@@ -4,7 +4,7 @@
  * email:  abhinavhimanshu6@gmail.com
  * date:   5,July,2017
  *
- * Description ::  FPGA has determinized controller in the form of IP which takes state input in binary bits.
+ * Description ::  FPGA has determinized controller in the form of IP which takes state input in binary bits(BDD Variables).
  *               > Make sure state and input space is less than 32 bit or make changes in vivado synthesis and edit the IP core
  *                 FPGA receives x y and theta from broadcaster from non blocking receive
  *                 FPGA waits for the ping from Robot
