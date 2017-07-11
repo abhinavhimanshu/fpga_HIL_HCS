@@ -1,0 +1,57 @@
+10:40:58 **** Auto Build of configuration Debug for project robot ****
+make all 
+Building file: ../src/robot.c
+Invoking: ARM v7 Linux gcc compiler
+arm-linux-gnueabihf-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/robot.o" -MMD -MP -MF"src/robot.d" -MT"src/robot.o" -o "src/robot.o" "../src/robot.c"
+../src/robot.c: In function ‘main’:
+../src/robot.c:83:29: warning: implicit declaration of function ‘statetoindexS’ [-Wimplicit-function-declaration]
+                       index=statetoindexS(buffer1);
+                             ^~~~~~~~~~~~~
+../src/robot.c:86:17: warning: implicit declaration of function ‘indextostateC’ [-Wimplicit-function-declaration]
+                 indextostateC(readme(r),buffer2);
+                 ^~~~~~~~~~~~~
+../src/robot.c:38:36: warning: unused variable ‘client_addr_size’ [-Wunused-variable]
+   socklen_t addr_size1,addr_size2, client_addr_size;
+                                    ^~~~~~~~~~~~~~~~
+../src/robot.c:36:42: warning: unused variable ‘clientAddr’ [-Wunused-variable]
+   struct sockaddr_in FPGAAddr1,FPGAAddr2,clientAddr;
+                                          ^~~~~~~~~~
+../src/robot.c:35:7: warning: unused variable ‘testcount’ [-Wunused-variable]
+   int testcount=0;
+       ^~~~~~~~~
+../src/robot.c:32:8: warning: unused variable ‘num’ [-Wunused-variable]
+   char num[524287];
+        ^~~
+../src/robot.c:27:35: warning: unused variable ‘nBytes2’ [-Wunused-variable]
+ int udpSocket1,udpSocket2,nBytes1,nBytes2;
+                                   ^~~~~~~
+../src/robot.c:27:27: warning: variable ‘nBytes1’ set but not used [-Wunused-but-set-variable]
+ int udpSocket1,udpSocket2,nBytes1,nBytes2;
+                           ^~~~~~~
+../src/robot.c: In function ‘statetoindexS’:
+../src/robot.c:114:3: warning: statement with no effect [-Wunused-value]
+   for(i ;i<sdim;i++)
+   ^~~
+../src/robot.c: At top level:
+../src/robot.c:125:6: warning: conflicting types for ‘indextostateC’
+ void indextostateC(int index, float state[]){
+      ^~~~~~~~~~~~~
+../src/robot.c:86:17: note: previous implicit declaration of ‘indextostateC’ was here
+                 indextostateC(readme(r),buffer2);
+                 ^~~~~~~~~~~~~
+Finished building: ../src/robot.c
+ 
+Building target: robot.elf
+Invoking: ARM v7 Linux gcc linker
+arm-linux-gnueabihf-gcc  -o "robot.elf"  ./src/robot.o   -lm
+Finished building target: robot.elf
+ 
+Invoking: ARM v7 Linux Print Size
+arm-linux-gnueabihf-size robot.elf  |tee "robot.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+   4306	    432	      4	   4742	   1286	robot.elf
+Finished building: robot.elf.size
+ 
+
+10:40:58 Build Finished (took 222ms)
+

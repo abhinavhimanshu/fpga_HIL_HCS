@@ -1,0 +1,170 @@
+/************* FOR THE FPGA UDP RECIEVE CODE *******************/
+
+#include <stdio.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <math.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <time.h>
+#include "ourheader.h"
+
+//State Parameters
+#define sdim 3
+#define udim 2
+
+// Variable for state and input space
+  int smask[sdim]={6,6,6};
+  int umask[udim]={3,3};
+  int valuesmask[sdim]={0,0,0};
+  int valueinmask[udim]={0,0};
+  float lbs[sdim]={450,600,-3.4}; // lower bounds after SCOTS Quantization .. See in Controller.bdd file  and take first coordinate of each step
+  float lbc[udim]={-240,-240};    // upper bounds Take from anywhere doesnot matter
+  float etas[sdim]={30,30,0.2};   //eta values for STATE SPACE as specified in SCOTS FILE
+  float etac[sdim]={120,120};     //eta values as INPUT SPACE specified in SCOTS FILE
+  float tau= 0.7;
+/*
+  udpSocket1 takes data from Image Processing server(BroadCaster).
+  Make sure it is binded to correct IP Address and Port NUM same IP should also be registerd in "IPAddresses.network.txt" file in at BroadCaster.
+  clientSocket is used to send data to the Robot periodically here in 0.7 seconds.
+
+*/
+
+int main(){
+
+  int udpSocket1,clientSocket,nBytes1,nBytes2;//Sockets to recieve and send data
+  float buffer1[3]={1,2,3};//to receive data from Broadcaster
+  float buffer2[2]={1,2};  //to send data to Robot | some garbage value initially
+  int index;               // used in real space to index conversion
+  int* w = getpointer(0);  //Get pointer to INPUT Address of Controller IP CORE
+  int* r = getpointer(4);  //Get pointer to OUTPUT Address of Controller IP CORE
+  int testcount=0;         //Debug variable to increment to make sure sync in Socket based communication
+  struct sockaddr_in FPGAAddr1,serverAddr;// Addrress to send and receive data.
+  struct sockaddr_storage serverStorage1,serverStorage2; // Only required if interested to get socket details of Sender
+  socklen_t addr_size1,addr_size, client_addr_size; //// Only required if interested to get socket details of Sender
+  initMask();
+
+  clock_t start,stop; // Measure time on FPGA
+
+
+  /*Create UDP socket*/
+  udpSocket1 = socket(PF_INET, SOCK_DGRAM, 0);//To receive data from Broadcaster
+  if(udpSocket1 > 0)
+    printf("UDP SOCKET 1 created\n");
+  else{
+	  printf("Problem creating the Socket\n");
+	  return udpSocket1;
+  }
+
+// It is necessary to get recvfrom NONBLOCKING | This makes udpSocket1 NonBlocking
+     long save_fd = fcntl( udpSocket1, F_GETFL );
+     save_fd |= O_NONBLOCK;
+     fcntl(udpSocket1, F_SETFL, save_fd );
+//
+
+  /*Configure settings in address struct to recieve data from Broadcaster*/
+     FPGAAddr1.sin_family = AF_INET;
+     FPGAAddr1.sin_port = htons(9003); // Put Port Num According to Image Processing Server (Broadcaster)
+     FPGAAddr1.sin_addr.s_addr = inet_addr("192.168.0.105");//Put IP Address of FPGA
+     memset(FPGAAddr1.sin_zero, '\0', sizeof FPGAAddr1.sin_zero);
+
+ // Open clientSocket to recieve data from
+     clientSocket = socket(PF_INET, SOCK_DGRAM, 0);// Socket to send control inputs to Robot
+
+  /*Configure settings in address struct according to Robot Address*/
+     serverAddr.sin_family = AF_INET;
+     serverAddr.sin_port = htons(7809);// port at which your Robot listens at
+     serverAddr.sin_addr.s_addr = inet_addr("192.168.0.113");// IP addres to which Robot listens at
+     memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
+  /*Bind socket 1 with address struct */
+     bind(udpSocket1, (struct sockaddr *) &FPGAAddr1, sizeof(FPGAAddr1)); //Bind to Socket to given address
+
+  start=0;
+  while(1){
+
+        /* Try to receive latest if any incoming UDP datagram. Address and port of requesting client will be stored on serverStorage variable */
+	        int tmp=0;
+	        tmp= recvfrom(udpSocket1,buffer1,sizeof(buffer1),0,0,0);
+
+	        while(tmp>11){
+		     tmp= recvfrom(udpSocket1,buffer1,sizeof(buffer1),0,0,0);
+	     }
+           buffer1[1]= 1900-(buffer1[1]-580);//Match the new cartesian
+	       buffer1[2]=-buffer1[2]; // Angle was flipped
+           printf(" %f | %f | %f \n",buffer1[0],buffer1[1],buffer1[2]);
+/**********************************************************************************************************************/
+	                   /* |Real State| -> |Index| -> [ CONTROLLER ON FPGA] -> |Index| -> |Real Control Input| */
+
+	                    index=statetoindexS(buffer1);//Get index of current state space
+                        writeme(w,index); 				  //Write index on Controller IP CORE input
+                        //usleep(1);                      //Read At
+			            indextostateC(readme(r),buffer2); //Read At Controller IP CORE output
+/**********************************************************************************************************************/
+         // Stop if in target or Tracker does-not detect it
+		 if( (450<=buffer1[0] && buffer1[0]<=590 && 600<=buffer1[1] && buffer1[1]<= 840 ) || buffer1[0]==-1 || buffer1[1]== -1 || buffer1[2]== -1 )
+			{
+			   	buffer2[0]=0.00;
+			    buffer2[1]=0.00;
+			}
+               //send control inputs corresponding to latest X Y and theta
+                sendto(clientSocket,buffer2,sizeof(buffer2),0,(struct sockaddr *)&serverAddr,addr_size);//Send control inputs to Robot
+                stop = clock();
+                //wait untill tau seconds | Take time less than tau to be safe
+			    while ( ( ((float)( stop - start)*100000)/ CLOCKS_PER_SEC) < 500000) {
+			           		stop = clock();
+                  }
+			      printf("%lf\n",( ((float)( stop - start)*100000)/ CLOCKS_PER_SEC) );
+			      start = clock();
+
+           }
+
+  return 0;
+
+}
+
+/**************************************************************************/
+//Sets the value of valueMask variables
+void initMask(){
+				for(int i=0;i<sdim-1;i++){
+					     valuesmask[i]=pow(2,smask[i]-1);
+ 			    }
+				for(int i=0;i<udim-1;i++){
+									     valueinmask[i]=pow(2,umask[i]-1);
+				}
+}
+ recieve(float buffer1[] ,int udpSocket1){
+	 int tmp=0;
+	 tmp= recvfrom(udpSocket1,buffer1,0,sizeof(buffer1),NULL,NULL);
+	 printf("tmp = %d \n",tmp);
+	 while(tmp>0){
+		tmp= recvfrom(udpSocket1,buffer1,0,sizeof(buffer1),NULL,NULL);
+		printf("tmp = %d \n",tmp);
+	 }
+ }
+
+//Convert state space value into index
+int statetoindexS(float state[]){
+   		int id[sdim],index=0,i=0;
+		for(i ;i<sdim;i++)
+			id[i]=round(((state[i]-lbs[i])/etas[i]));
+                index=id[sdim-1];
+        for(int i= sdim-1;i>0;i--){
+        	                       index=index|id[i];
+        	                       index=(index<<smask[i]);
+        }
+    	index=index|id[0];
+return index;
+}
+//convert control input index into real control inputs
+void indextostateC(int index, float state[]){
+                        for(int i=0;i<udim;i++){
+                        	state[i]=0;
+                        	state[i]= index & valueinmask[i];
+                        	state[i]=lbc[i]+etac[i]*state[i];
+                        	index=(index >> umask[i]);
+                        }
+}
+

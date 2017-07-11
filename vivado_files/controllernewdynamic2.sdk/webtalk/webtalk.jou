@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Webtalk v2017.1 (64-bit)
+# SW Build 1846317 on Fri Apr 14 18:54:47 MDT 2017
+# 
+# Start of session at: Mon Jul  3 19:14:26 2017
+# Process ID: 24562
+# Current directory: /home/fmlab3/vivado_projects/controllernewdynamic2/controllernewdynamic2.sdk/webtalk
+# Command line: wbtcv -mode batch -source sdk_webtalk.tcl
+# Log file: /home/fmlab3/vivado_projects/controllernewdynamic2/controllernewdynamic2.sdk/webtalk/webtalk.log
+# Journal file: /home/fmlab3/vivado_projects/controllernewdynamic2/controllernewdynamic2.sdk/webtalk/webtalk.jou
+#-----------------------------------------------------------
+source sdk_webtalk.tcl

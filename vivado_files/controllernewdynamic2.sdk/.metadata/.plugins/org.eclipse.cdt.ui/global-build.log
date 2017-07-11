@@ -1,0 +1,51 @@
+14:38:20 **** Incremental Build of configuration Debug for project robot2 ****
+make all 
+make: Nothing to be done for 'all'.
+14:41:56 **** Auto Build of configuration Debug for project robot2 ****
+make all 
+Building file: ../src/run2.c
+Invoking: ARM v7 Linux gcc compiler
+arm-linux-gnueabihf-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/run2.o" -MMD -MP -MF"src/run2.d" -MT"src/run2.o" -o "src/run2.o" "../src/run2.c"
+../src/run2.c: In function ‘main’:
+../src/run2.c:65:3: warning: implicit declaration of function ‘initMask’ [-Wimplicit-function-declaration]
+   initMask();
+   ^~~~~~~~
+../src/run2.c:118:26: warning: passing argument 2 of ‘recvfrom’ makes pointer from integer without a cast [-Wint-conversion]
+      recvfrom(udpSocket2,ping,sizeof(ping),0,(struct sockaddr *)&serverStorage2, &addr_size2);
+                          ^~~~
+In file included from ../src/run2.c:20:0:
+/home/fmlab3/vivado_installed/SDK/2017.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/usr/include/sys/socket.h:174:16: note: expected ‘void * restrict’ but argument is of type ‘char’
+ extern ssize_t recvfrom (int __fd, void *__restrict __buf, size_t __n,
+                ^~~~~~~~
+../src/run2.c:140:28: warning: implicit declaration of function ‘statetoindexS’ [-Wimplicit-function-declaration]
+                      index=statetoindexS(buffer1);    //Get index of current state space
+                            ^~~~~~~~~~~~~
+../src/run2.c:143:16: warning: implicit declaration of function ‘indextostateC’ [-Wimplicit-function-declaration]
+                indextostateC(readme(r),buffer2);//Read At Controller IP CORE output
+                ^~~~~~~~~~~~~
+../src/run2.c: At top level:
+../src/run2.c:179:6: warning: conflicting types for ‘initMask’
+ void initMask(){
+      ^~~~~~~~
+../src/run2.c:65:3: note: previous implicit declaration of ‘initMask’ was here
+   initMask();
+   ^~~~~~~~
+../src/run2.c:205:6: warning: conflicting types for ‘indextostateC’
+ void indextostateC(int index, float state[]){
+      ^~~~~~~~~~~~~
+../src/run2.c:143:16: note: previous implicit declaration of ‘indextostateC’ was here
+                indextostateC(readme(r),buffer2);//Read At Controller IP CORE output
+                ^~~~~~~~~~~~~
+Finished building: ../src/run2.c
+ 
+Building target: robot2.elf
+Invoking: ARM v7 Linux gcc linker
+arm-linux-gnueabihf-gcc  -o "robot2.elf"  ./src/run2.o   -lm
+Finished building target: robot2.elf
+ 
+Invoking: ARM v7 Linux Print Size
+arm-linux-gnueabihf-size robot2.elf  |tee "robot2.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+   4736	    432	     16	   5184	   1440	robot2.elf
+Finished building: robot2.elf.size
+ 
