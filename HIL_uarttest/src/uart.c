@@ -4,7 +4,7 @@
  * email:  abhinavhimanshu6@gmail.com
  * date:   5,July,2017
  *
- * Description ::  FPGA has determinized controller in the form of IP which takes state input in binary bits.
+ * Description ::  FPGA has determinized controller in the form of IP which takes state input in bits(BDD Variables).
  *               > Make sure state and input space is less than 32 bit or make changes in vivado synthesis and edit the IP core
  *                 FPGA receives x y and theta values in form of BDD variables from the Matlab simultion code through UART 
  *                 Ands sends back the Control inputs in form of a BDD variable through UART to matlab 
